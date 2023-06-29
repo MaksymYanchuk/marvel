@@ -1,89 +1,81 @@
-import { Component } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
 import Spinner from "../spinner/Spinner";
-import ErrorMessage from "../errorMessage/ErrorMassege";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../../services/MarvelService";
 import "./randomChar.scss";
 import mjolnir from "../../resources/img/mjolnir.png";
 
-class RandomChar extends Component {
-  state = {
-    char: {},
-    loading: true,
-    error: false,
-  };
+const RandomChar = () => {
 
-  marvelSevice = new MarvelService();
+  const [char, setChar] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  onCharLoaded = (char) => {
+  const marvelSevice = new MarvelService();
+
+  const onCharLoaded = (char) => {
     if (char.description === "") char.description = "Description not found";
 
-    this.setState({
-      char,
-      loading: false,
-      error: false,
-    });
+    setChar(char);
+    setLoading(false);
+    setError(false);
   };
 
-  onError = () => {
-    this.setState({
-      loading: false,
-      error: true,
-    });
+  const onCharLoading = () => {
+    setLoading(true);
+  }
+
+  const onError = () => {
+    setLoading(false);
+    setError(true);
   };
 
-  updateChar = () => {
+  const updateChar = () => {
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    this.marvelSevice
+    onCharLoading();
+    marvelSevice
       .getCharacter(id)
-      .then(this.onCharLoaded)
-      .catch(this.onError);
+      .then(onCharLoaded)
+      .catch(onError);
   };
 
-  componentDidMount() {
-    this.updateChar();
-    this.timerId = setInterval(this.updateChar, 100000);
-  }
+  useEffect(() => {
+    updateChar(); 
+  }, [])
+ 
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const spinner = loading ? <Spinner /> : null;
+  const content = !(loading || error) ? <View char={char} /> : null;
 
-  componentWillUnmount() {
-    clearInterval(this.timerId);
-  }
-
-  render() {
-    const { char, loading, error, } = this.state;
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? <View char={char} /> : null;
-
-    return (
-      <div className="randomchar">
-        {errorMessage}
-        {spinner}
-        {content}
-        <div className="randomchar__static">
-          <p className="randomchar__title">
-            Random character for today!
-            <br />
-            Do you want to get to know him better?
-          </p>
-          <p className="randomchar__title">Or choose another one</p>
-          <button onClick={this.updateChar} className="button button__main">
-            <div className="inner">try it</div>
-          </button>
-          <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
-        </div>
+  return (
+    <div className="randomchar">
+      {errorMessage}
+      {spinner}
+      {content}
+      <div className="randomchar__static">
+        <p className="randomchar__title">
+          Random character for today!
+          <br />
+          Do you want to get to know him better?
+        </p>
+        <p className="randomchar__title">Or choose another one</p>
+        <button onClick={updateChar} className="button button__main">
+          <div className="inner">try it</div>
+        </button>
+        <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
       </div>
-    );
-  }
+    </div>
+  );
+
 }
 
 const View = ({ char }) => {
     const { name, description, thumbnail, homepage, wiki } = char;
 
-    let imgStyle;
-    thumbnail ===
-    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
-      ? (imgStyle = { objectFit: "contain" })
-      : (imgStyle = { objectFit: "cover" });
+      const imgStyle = {
+        objectFit: thumbnail === "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg" ? "contain" : "cover"
+      };
 
   return (
     <div className="randomchar__block">
