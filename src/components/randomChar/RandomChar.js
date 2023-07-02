@@ -7,24 +7,23 @@ import "./randomChar.scss";
 import mjolnir from "../../resources/img/mjolnir.png";
 
 const RandomChar = () => {
-
   const [char, setChar] = useState({})
   const {loading, error, getCharacter, clearError} = useMarvelService();
 
   useEffect(() => {
     updateChar(); 
   }, [])
- 
-  const onCharLoaded = (char) => {
-    if (char.description === "") char.description = "Description not found";
-    setChar(char);
-  };
 
   const updateChar = () => {
     clearError();
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
     getCharacter(id)
       .then(onCharLoaded)
+  };
+
+  const onCharLoaded = (char) => {
+    if (char.description === "") char.description = "Description not found";
+    setChar(char);
   };
 
   const errorMessage = error ? <ErrorMessage /> : null;
