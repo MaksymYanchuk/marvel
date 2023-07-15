@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -16,7 +15,7 @@ const CharInfo = (props) => {
 
     useEffect(() => {
         updateChar();
-    }, [])
+    }, [props.charId])
 
     const updateChar = () => {
         
@@ -28,6 +27,7 @@ const CharInfo = (props) => {
         clearError();
         getCharacter(charId)
             .then(onCharLoaded)
+            .catch(console.log(error))
     }  
     
     const onCharLoaded = (char) => {

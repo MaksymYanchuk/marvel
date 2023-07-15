@@ -8,9 +8,6 @@
         column-gap: 25px;
         align-items: start;
     }
-    &__list {
-        margin: 0 auto;
-    }
     &__grid {
         display: grid;
         grid-template-columns: repeat(3, 200px);
@@ -35,6 +32,20 @@
             box-shadow: 0 5px 20px $main-color;
             transform: translateY(-8px);
         }
+        &-enter {
+            opacity: 0;
+        }
+        &-enter-active {
+            opacity: 1;
+            transition: opacity 500ms ease-in;
+        }
+        &-exit {
+            opacity: 1;
+        }
+        &-exit-active {
+            opacity: 0;
+            transition: opacity 500ms ease-in;
+        }
     }
     &__name {
         font-weight: bold;
@@ -42,5 +53,5 @@
         line-height: 29px;
         text-transform: uppercase;
         color: #fff;
-    }
+    } 
 }
