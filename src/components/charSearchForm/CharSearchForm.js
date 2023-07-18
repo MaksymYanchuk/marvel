@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import useMarvelService from '../../services/MarvelService'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
@@ -8,8 +8,7 @@ import './charSearchForm.scss'
 
 const CharSearchForm = () => {
     const [char, setChar] = useState(null)
-    const {loading, error, getCharacterByName, clearError} = useMarvelService();
-
+    const {getCharacterByName, clearError, process, setProcess} = useMarvelService();
     const { register,
         formState: {
             errors,
@@ -21,12 +20,11 @@ const CharSearchForm = () => {
          });
 
     const onSubmit = data => {
-        const name = data.charName;
-
         clearError();
-    
-        getCharacterByName(name)
+
+        getCharacterByName(data.charName)
             .then(onCharLoaded)
+            .then(() => setProcess('confirmed'))
             .catch()
     };
 
@@ -58,7 +56,7 @@ const CharSearchForm = () => {
         )
     }
 
-    const errorMessage = error ? <div className="char__search-critical-error"><ErrorMessage /></div> : null;
+    const errorMessage = process === 'error' ? <div className="char__search-critical-error"><ErrorMessage /></div> : null;
 
     return (
         <div className='char__search-form'>
@@ -70,8 +68,8 @@ const CharSearchForm = () => {
                     {...register("charName", { 
                         required: "This field is required", 
                         maxLength: {
-                            value:20,
-                            message: "The characters name must be less than 20 symbols"
+                            value:40,
+                            message: "The characters name must be less than 40 symbols"
                         },
                         minLength: {
                             value:2,
@@ -79,9 +77,9 @@ const CharSearchForm = () => {
                         } })}/>
                     
                     <button 
-                    type='submit' 
-                    className='button button__main'
-                    disabled={loading}>
+                        type='submit' 
+                        className='button button__main'
+                        disabled={process === 'loading'}>
                         <div className="inner">find</div>
                     </button>
 
